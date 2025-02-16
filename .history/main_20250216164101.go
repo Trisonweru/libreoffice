@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/cors"
 )
 
 func convertHandler(c *gin.Context) {
@@ -52,16 +53,11 @@ func convertHandler(c *gin.Context) {
 func main() {
 	r := gin.Default()
 
-	// Enable CORS using Gin middleware
+	// Enable CORS
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(http.StatusOK)
-			return
-		}
-		c.Next()
+		cors.Default().Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c.Next()
+		}))(c.Writer, c.Request)
 	})
 
 	// Define routes

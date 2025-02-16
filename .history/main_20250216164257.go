@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/cors"
 )
 
 func convertHandler(c *gin.Context) {
