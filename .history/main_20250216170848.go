@@ -69,7 +69,7 @@ func convertHandler(c *gin.Context) {
 	// Serve converted file
 	c.File(outputPath)
 
-	log.Println("I'm Here5")
+	log.Println("I'm Here4")
 
 	// Clean up temporary files
 	go func() {

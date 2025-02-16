@@ -69,8 +69,6 @@ func convertHandler(c *gin.Context) {
 	// Serve converted file
 	c.File(outputPath)
 
-	log.Println("I'm Here5")
-
 	// Clean up temporary files
 	go func() {
 		time.Sleep(10 * time.Second) // Delay to ensure file is served

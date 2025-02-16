@@ -64,12 +64,8 @@ func convertHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println("I'm Here4")
-
 	// Serve converted file
 	c.File(outputPath)
-
-	log.Println("I'm Here5")
 
 	// Clean up temporary files
 	go func() {

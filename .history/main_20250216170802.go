@@ -15,8 +15,6 @@ import (
 )
 
 func convertHandler(c *gin.Context) {
-
-	log.Println("I'm Here")
 	// Parse file upload
 	file, handler, err := c.Request.FormFile("file")
 	if err != nil {
@@ -25,8 +23,6 @@ func convertHandler(c *gin.Context) {
 		return
 	}
 	defer file.Close()
-
-	log.Println("I'm Her2")
 
 	// Save uploaded file
 	inputPath := filepath.Join("/tmp", handler.Filename)
@@ -38,8 +34,6 @@ func convertHandler(c *gin.Context) {
 	}
 	defer outFile.Close()
 	io.Copy(outFile, file)
-
-	log.Println("I'm Here3")
 
 	// Determine output file extension
 	outputExt := ".pdf"
@@ -64,12 +58,8 @@ func convertHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println("I'm Here4")
-
 	// Serve converted file
 	c.File(outputPath)
-
-	log.Println("I'm Here5")
 
 	// Clean up temporary files
 	go func() {

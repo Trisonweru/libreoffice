@@ -39,8 +39,6 @@ func convertHandler(c *gin.Context) {
 	defer outFile.Close()
 	io.Copy(outFile, file)
 
-	log.Println("I'm Here3")
-
 	// Determine output file extension
 	outputExt := ".pdf"
 	if filepath.Ext(inputPath) == ".pdf" {
@@ -64,12 +62,8 @@ func convertHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println("I'm Here4")
-
 	// Serve converted file
 	c.File(outputPath)
-
-	log.Println("I'm Here5")
 
 	// Clean up temporary files
 	go func() {
