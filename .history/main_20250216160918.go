@@ -51,14 +51,11 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/convert", convertHandler)
-
-	// Enable CORS
 	handler := cors.Default().Handler(mux)
 
+	http.HandleFunc("/convert", convertHandler)
 	fmt.Println("Server running on port 8080...")
-	http.ListenAndServe(":8080", handler)
+	http.ListenAndServe(":8080", nil)
 }
 
 //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
