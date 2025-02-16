@@ -64,10 +64,6 @@ func main() {
 		c.Next()
 	})
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
 	// Define routes
 	r.POST("/convert", convertHandler)
 
