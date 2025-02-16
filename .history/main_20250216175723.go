@@ -131,7 +131,7 @@ func main() {
 	r.POST("/convert", convertHandler)
 
 	fmt.Println("Server running on port 8050...")
-	if err := r.Run(":8052"); err != nil {
+	if err := r.Run(":8050"); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }
