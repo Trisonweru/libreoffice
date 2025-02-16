@@ -42,22 +42,24 @@ func convertHandler(c *gin.Context) {
 	log.Println("I'm Here3")
 
 	// Determine output file extension
-	outputExt := ".pdf"
-	if filepath.Ext(inputPath) == ".pdf" {
-		outputExt = ".docx"
-	}
+	// outputExt := ".pdf"
+	// if filepath.Ext(inputPath) == ".pdf" {
+	// 	outputExt = ".docx"
+	// }
 	// outputPath := inputPath + outputExt
 
 	outputPath := filepath.Join("/home/ubuntu-s-1vcpu-1gb-fra1-01/converted", handler.Filename+outputExt)
 
 	// Convert using LibreOffice
-	cmd := exec.Command("libreoffice", "--headless", "--convert-to", outputExt[1:], "--outdir", "/home/ubuntu-s-1vcpu-1gb-fra1-01/converted", inputPath)
+	cmd := exec.Command("libreoffice", "--headless", "--convert-to", outputExt[1:], "--outdir", "/tmp", inputPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("Conversion failed:", err, string(output))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Conversion failed", "details": string(output)})
 		return
 	}
+
+	home/ubuntu-s-1vcpu-1gb-fra1-01/converted
 
 	// Ensure output file exists
 	if _, err := os.Stat(outputPath); os.IsNotExist(err) {

@@ -42,10 +42,10 @@ func convertHandler(c *gin.Context) {
 	log.Println("I'm Here3")
 
 	// Determine output file extension
-	outputExt := ".pdf"
-	if filepath.Ext(inputPath) == ".pdf" {
-		outputExt = ".docx"
-	}
+	// outputExt := ".pdf"
+	// if filepath.Ext(inputPath) == ".pdf" {
+	// 	outputExt = ".docx"
+	// }
 	// outputPath := inputPath + outputExt
 
 	outputPath := filepath.Join("/home/ubuntu-s-1vcpu-1gb-fra1-01/converted", handler.Filename+outputExt)
