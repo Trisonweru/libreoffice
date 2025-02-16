@@ -44,7 +44,7 @@ func convertHandler(c *gin.Context) {
 	// // Send back the converted file
 	// c.File(outputPath)
 
-	c.JSON(http.StatusOK, gin.H{"message": "fetched"})
+	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 
 }
 

@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,9 +47,6 @@ func convertHandler(c *gin.Context) {
 
 	// // Send back the converted file
 	// c.File(outputPath)
-
-	c.JSON(http.StatusOK, gin.H{"message": "fetched"})
-
 }
 
 func main() {
