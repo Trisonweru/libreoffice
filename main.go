@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -15,8 +16,8 @@ import (
 )
 
 func convertHandler(c *gin.Context) {
+	log.Println("Received conversion request...")
 
-	log.Println("I'm Here")
 	// Parse file upload
 	file, handler, err := c.Request.FormFile("file")
 	if err != nil {
@@ -26,10 +27,11 @@ func convertHandler(c *gin.Context) {
 	}
 	defer file.Close()
 
-	log.Println("I'm Her2")
+	// Ensure safe filename (remove spaces & special chars)
+	safeFilename := strings.ReplaceAll(handler.Filename, " ", "_")
+	inputPath := filepath.Join("/tmp", safeFilename)
 
 	// Save uploaded file
-	inputPath := filepath.Join("/tmp", handler.Filename)
 	outFile, err := os.Create(inputPath)
 	if err != nil {
 		log.Println("Failed to save file:", err)
@@ -38,53 +40,57 @@ func convertHandler(c *gin.Context) {
 	}
 	defer outFile.Close()
 	io.Copy(outFile, file)
+	log.Println("File saved:", inputPath)
 
-	log.Println("I'm Here3")
-
-	// Determine output file extension
-	outputExt := ".pdf"
+	// Determine output format for LibreOffice
+	var libreOfficeFormat string
 	if filepath.Ext(inputPath) == ".pdf" {
-		outputExt = ".docx"
+		libreOfficeFormat = "docx"
+	} else {
+		libreOfficeFormat = "pdf"
 	}
-	// outputPath := inputPath + outputExt
 
-	outputPath := filepath.Join("/home/ubuntu-s-1vcpu-1gb-fra1-01/converted", handler.Filename+outputExt)
+	// Construct expected output filename
+	outputDir := "/tmp"
+	outputFilename := strings.TrimSuffix(safeFilename, filepath.Ext(safeFilename)) + "." + libreOfficeFormat
+	outputPath := filepath.Join(outputDir, outputFilename)
 
-	// Convert using LibreOffice
-	cmd := exec.Command("libreoffice", "--headless", "--convert-to", outputExt[1:], "--outdir", "/home/ubuntu-s-1vcpu-1gb-fra1-01/converted", inputPath)
+	// Run LibreOffice conversion
+	cmd := exec.Command("libreoffice", "--headless", "--convert-to", libreOfficeFormat, "--outdir", outputDir, inputPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("Conversion failed:", err, string(output))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Conversion failed", "details": string(output)})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Conversion failed",
+			"details": string(output),
+		})
 		return
 	}
 
-	// Ensure output file exists
+	// Ensure the converted file exists
 	if _, err := os.Stat(outputPath); os.IsNotExist(err) {
 		log.Println("Output file not found:", outputPath)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Output file not generated"})
 		return
 	}
-
-	log.Println("I'm Here4")
+	log.Println("Conversion successful:", outputPath)
 
 	// Serve converted file
 	c.File(outputPath)
 
-	log.Println("I'm Here5")
-
-	// Clean up temporary files
+	// Clean up files after serving
 	go func() {
-		time.Sleep(10 * time.Second) // Delay to ensure file is served
+		time.Sleep(10 * time.Second) // Delay cleanup to ensure file is downloaded
 		os.Remove(inputPath)
 		os.Remove(outputPath)
+		log.Println("Cleaned up:", inputPath, outputPath)
 	}()
 }
 
 func main() {
 	r := gin.Default()
 
-	// CORS middleware
+	// CORS Middleware
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"POST", "OPTIONS"},
@@ -101,7 +107,7 @@ func main() {
 	r.POST("/convert", convertHandler)
 
 	fmt.Println("Server running on port 8050...")
-	if err := r.Run(":8070"); err != nil {
+	if err := r.Run(":8053"); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }
